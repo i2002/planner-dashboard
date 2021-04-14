@@ -1,0 +1,79 @@
+<!doctype html>
+<html>
+<head>
+    <link href="fontawesome/css/all.css" rel="stylesheet">
+    <script src="js/index.js"></script>
+    <script src="js/card.js"></script>
+    <script src="js/timer.js"></script>
+    <script src="js/school-dashboard.js"></script>
+    <style>
+        body {
+            background-color: rgba(0,0,0,0.4) !important;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 400px auto 400px;
+        }
+
+        .card {
+            margin: 0.5rem 0;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            background-color: white;
+        }
+
+        .card .heading {
+            color: darkslategray;
+            font-size: 14px;
+        }
+
+        .card .heading i {
+            font-size: 12px;
+        }
+
+        .clock {
+            text-align: center;
+        }
+
+        .clock .time {
+            font-family: "Raleway";
+            font-size: 80px;
+            font-weight: 400;
+            color: white;
+            text-shadow: 0 0 3px black;
+        }
+
+        .clock .date {
+            font-family: "Raleway";
+            font-size: 30px;
+            color: white;
+            text-shadow: 0 0 2px black;
+        }
+    </style>
+</head>
+<body>
+    <div class="grid" id="app">
+        <div>
+
+        </div>
+        <div>
+            <div class="clock col-2">
+                <div class="time">12:00</div>
+                <div class="date">Sunday, 11 April 2021</div>
+            </div>
+        </div>
+        <div>
+            <div class="card col-3">
+                <div class="heading">
+                    <i class="fas fa-fw fa-user"></i>
+                    <span>Title</span>
+                </div>
+                <div class="content">
+                    Hello there
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
