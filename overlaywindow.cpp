@@ -27,7 +27,7 @@ bool OverlayWindow::event(QEvent* e)
 void OverlayWindow::toggleState()
 {
     if(!isVisible())
-        showFullScreen();
+        showMaximized();
     else
         hide();
 }
@@ -41,6 +41,8 @@ void OverlayWindow::setupPage()
     setPage(page);
     setContextMenuPolicy(Qt::NoContextMenu);
     setAttribute(Qt::WA_TranslucentBackground);
+    setWindowFlags(Qt::FramelessWindowHint);
+    resize(1920, 900);
 }
 
 void OverlayWindow::setupEvents()
