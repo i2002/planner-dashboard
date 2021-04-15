@@ -1,25 +1,23 @@
-#ifndef APPHANDLER_H
-#define APPHANDLER_H
+#ifndef SCHEMEHANDLER_H
+#define SCHEMEHANDLER_H
 
 #include <QWebEngineUrlSchemeHandler>
-
-#include <QMimeType>
 #include <QMimeDatabase>
 
-class AppHandler : public QWebEngineUrlSchemeHandler
+class SchemeHandler : public QWebEngineUrlSchemeHandler
 {
-        Q_OBJECT
+    Q_OBJECT
 public:
-    explicit AppHandler(QObject *parent = nullptr);
-
+    explicit SchemeHandler(QObject *parent = nullptr);
+    void install();
     void requestStarted(QWebEngineUrlRequestJob *job) override;
 
     static void registerUrlScheme();
     const static QByteArray schemeName;
-    const static QUrl aboutUrl;
+    const static QUrl indexUrl;
 
 private:
     QMimeDatabase db;
 };
 
-#endif // APPHANDLER_H
+#endif // SCHEMEHANDLER_H

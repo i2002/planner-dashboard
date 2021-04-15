@@ -1,11 +1,13 @@
 <!doctype html>
 <html>
 <head>
+    <meta charset="UTF-8">
     <link href="fontawesome/css/all.css" rel="stylesheet">
-    <script src="js/index.js"></script>
+    <script src="js/app.js"></script>
     <script src="js/card.js"></script>
     <script src="js/timer.js"></script>
-    <script src="js/school-dashboard.js"></script>
+    <script src="js/school.js"></script>
+    <script src="js/index.js"></script>
     <style>
         body {
             background-color: rgba(0,0,0,0.4) !important;
@@ -33,6 +35,7 @@
         }
 
         .clock {
+            margin: 3rem 0;
             text-align: center;
         }
 
@@ -50,6 +53,122 @@
             color: white;
             text-shadow: 0 0 2px black;
         }
+
+        .school .content {
+            display: flex;
+            flex-direction: column;
+            padding: 0.5rem 0.25rem 0.1rem;
+        }
+        .school .message {
+            /* font-size: 14px; */
+            font-style: italic;
+            color: darkslateblue;
+        }
+
+        .school .subject {
+            font-size: 20px;
+            margin-bottom: 0.4rem;
+        }
+        
+        .school .actions {
+            display: flex;
+            justify-content: space-evenly;
+            margin-top: 0.25rem;
+            /* padding: 0.3rem 0; */
+        }
+
+        .school .actions .button {
+            width: 100%;
+            margin: 0 0.5rem;
+            padding: 0.2rem 1rem;
+            text-align: center;
+
+            color: inherit;
+            border-radius: 0.2rem;
+            border: 1px solid rgba(0,0,0,0.2);
+            
+            transition: 0.2s linear all;
+            user-select: none;
+            text-decoration: none;
+        }
+
+        .school .actions .button:first-child {
+            margin-left: 0;
+        }
+
+        .school .actions .button:last-child {
+            margin-right: 0;
+        }
+
+        .school .details .actions .button.dropdown.more {
+            display: none;
+        }
+
+        .school .content:not(.details) .actions .button.dropdown.less {
+            display: none;
+        }
+
+        .school .actions .button.dropdown::after {
+            content: "\f078";
+            display: inline-block;
+            font-family: "Font Awesome 5 Free";
+            font-weight: 900;
+            font-size: 12px;
+            margin: 0 0.3rem;
+        }
+
+        .school .actions .button.dropdown.less::after {
+            content: "\f077";
+        }
+
+        .school .actions .button:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+        }
+
+        .school .details .schedule {
+            display: unset;
+        }
+
+        .school .schedule {
+            margin: 0.4rem -0.75rem;
+            display: none;
+        }
+
+        .school .schedule ul {
+            margin: 0;
+            padding: 0;
+            list-style-type: none;
+        }
+
+        .school .schedule ul li {
+            margin: 0 0.25rem;
+            padding: 0.5rem 1.25rem;
+            border-radius: 0.2rem;
+            display: flex;
+        }
+
+        .school .schedule ul li span {
+            margin-right: auto;
+        }
+
+        .school .schedule ul li:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+        
+        .school .schedule ul li:not(:hover) a {
+            display: none;
+        }
+
+        .school .schedule ul li a {
+            font-size: 14px;
+        }
+
+        .separator {
+            background: rgba(0, 0, 0, 0.2);
+            background: linear-gradient(90deg, rgba(2, 0, 36, 0) 0%, rgba(0, 0, 0, 0.2) 5%, rgba(0, 0, 0, 0.2) 95%, rgba(2, 0, 36, 0) 100%);
+            height: 1px;
+        }
     </style>
 </head>
 <body>
@@ -58,21 +177,40 @@
 
         </div>
         <div>
-            <div class="clock col-2">
+            <!--<div class="clock col-2">
                 <div class="time">12:00</div>
                 <div class="date">Sunday, 11 April 2021</div>
-            </div>
+            </div>-->
         </div>
         <div>
-            <div class="card col-3">
+            <!--<div class="card school details">
                 <div class="heading">
                     <i class="fas fa-fw fa-user"></i>
                     <span>Title</span>
                 </div>
                 <div class="content">
-                    Hello there
+                    <span class="message">Up next</span>
+                    <span class="subject">Română</span>
+                    <div class="schedule">
+                        <div class="separator"></div>
+                        <ul>
+                            <li>
+                                <span>Română</span>
+                                <a href="#">abc</a>
+                            </li>
+                            <li>Mate</li>
+                            <li>Info</li>
+                        </ul>
+                        <div class="separator"></div>
+                    </div>
+                    <div class="actions">
+                        <a href="#" class="button">Meeting</a>
+                        <a href="#" class="button">Classroom</a>
+                        <span class="button dropdown more">More</span>    
+                        <span class="button dropdown less">Less</span>
+                    </div>
                 </div>
-            </div>
+            </div>-->
         </div>
     </div>
 </body>

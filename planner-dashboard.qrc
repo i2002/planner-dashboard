@@ -1703,5 +1703,10 @@
         <file>app/fontawesome/webfonts/fa-solid-900.woff2</file>
         <file>app/fontawesome/attribution.js</file>
         <file>app/fontawesome/LICENSE.txt</file>
+        <file>app/js/card.js</file>
+        <file>app/js/index.js</file>
+        <file>app/js/school.js</file>
+        <file>app/js/timer.js</file>
+        <file>app/js/app.js</file>
     </qresource>
 </RCC>
