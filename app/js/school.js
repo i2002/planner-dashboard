@@ -8,7 +8,7 @@ class School
             this.render_view();
             this.setup_event_listeners();
             app.register(this);
-        });
+        }).catch(err => console.error(err));
     }
 
     tick()
@@ -57,7 +57,7 @@ class School
         this.schedule[weekday - 1].forEach(entry => {
             let subject = this.subjects[entry.subject];
             let links = '';
-            subject.links.forEach(link => links += `<a target="_blank" href="${link.url}">${link.name}</a>`);
+            subject.links.forEach(link => links += `<a href="${link.url}">${link.name}</a>`);
             render += `<li><span>${subject.name}</span>${links}</li>`;
         })
         return `<div class="separator"></div><ul>${render}</ul><div class="separator"></div>`
@@ -95,42 +95,14 @@ class School
 
     get_data()
     {
-        // return new Promise((resolve, reject) => {
-        //     fetch('app:data?type=school-schedule')
-        //     .catch(e => reject(e))
-        //     .then(response => response.json())
-        //     .then(data => this.schedule = data)
-        //     .then(() => {
-        //         fetch('app:data?type=school-subjects')
-        //         .catch(e => reject(e))
-        //         .then(response => response.json())
-        //         .then(data => this.subjects)
-        //         .then(() => resolve);
-        //     });
-        // });
         return new Promise((resolve, reject) => {
-            this.schedule = [
-                [
-                    {from:800, to: 850, subject: 3},
-                    {from:900, to: 950, subject: 4}
-                ],
-                [
-                    {from:800, to: 850, subject: 3},
-                    {from:900, to: 950, subject: 4}
-                ],
-                [
-                    {from:1915, to: 1945, subject: 3},
-                    {from:2000, to: 2049, subject: 3}
-                ],
-            ];
-
-            this.subjects = [
-                {name: "Română", links: []},
-                {name: "Română", links: []},
-                {name: "Română", links: []},
-                {name: "Info", links: [{name: "Meet", url: "https://www.google.com"}]},
-            ];
-            resolve();
+            httpGetAsync("app:data?action=school-schedule", data => {
+                this.schedule = JSON.parse(data);
+                httpGetAsync("app:data?action=school-subjects", subjects => {
+                    this.subjects = JSON.parse(subjects);
+                    resolve();
+                }, reject);
+            }, reject);
         });
     }
 
