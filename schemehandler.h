@@ -18,6 +18,10 @@ public:
 
 private:
     QMimeDatabase db;
+
+    void serveFiles(QWebEngineUrlRequestJob *job, QUrl url);
+    void sendData(QWebEngineUrlRequestJob *job, QUrl url);
+    void handleInput(QWebEngineUrlRequestJob *job, QUrl url);
 };
 
 #endif // SCHEMEHANDLER_H

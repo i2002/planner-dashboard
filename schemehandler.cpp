@@ -6,17 +6,21 @@
 #include <QStandardPaths>
 #include <QMimeType>
 
-#include <QTextCodec>
+//#include <QTextCodec>
 #include <QDataStream>
 
 #include <QWebEngineUrlRequestJob>
 #include <QWebEngineUrlScheme>
 #include <QWebEngineProfile>
 
+#include <QRegularExpression>
+#include <QRegularExpressionMatch>
+
 #define SCHEMENAME "app"
 
 const QByteArray SchemeHandler::schemeName = QByteArrayLiteral(SCHEMENAME);
-const QUrl SchemeHandler::indexUrl = QUrl(QStringLiteral(SCHEMENAME ":index"));
+const QUrl SchemeHandler::indexUrl = QUrl(QStringLiteral(SCHEMENAME ":index.html"));
+const QUrl dataUrl = QUrl(QStringLiteral(SCHEMENAME ":data"));
 
 SchemeHandler::SchemeHandler(QObject *parent)
     : QWebEngineUrlSchemeHandler(parent)
@@ -38,42 +42,57 @@ void SchemeHandler::requestStarted(QWebEngineUrlRequestJob *job)
     QUrl url = job->requestUrl();
     QUrl initiator = job->initiator();
 
-    if (method == GET && url == indexUrl) {
-        QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
-        QFile *file = new QFile(QStringLiteral(":/app/index.html"), job);
-        file->open(QIODevice::ReadOnly | QIODevice::Text);
-        job->reply(QByteArrayLiteral("text/html"), file);
+    if((method != GET && method != POST) || (initiator != webUiOrigin && url != indexUrl)) {
+        job->fail(QWebEngineUrlRequestJob::RequestDenied);
+        return;
+    }
 
-    } else if(method == GET && initiator == webUiOrigin && url.path() == "data") {
-        QFile *data = new QFile(QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation) + "/abc.json");
-        QDir dir;
-        if(!dir.exists(QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation))) {
-            dir.mkpath(QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation));
-        }
-
-        if(!data->exists()) {
-            data->open(QIODevice::ReadWrite);
-            data->write("[[],[],[],[],[]]");
+    if(method == GET) {
+        if(url.path() == dataUrl.path()) {
+            sendData(job, url);
         }
         else {
-            data->open(QIODevice::ReadOnly);
+            serveFiles(job, url);
         }
-        QDataStream s(QByteArrayLiteral("demo"));
-        job->reply(QByteArrayLiteral("application/json"), data);
-    } else if(method == GET && initiator == webUiOrigin) {
-        QMimeType m = db.mimeTypeForUrl(url);
-        QFile *file = new QFile(QStringLiteral(":/app/") + url.path());
-
-        if(file->open(QIODevice::ReadOnly))
-            job->reply(m.name().toUtf8(), file);
-        else
-            job->fail(QWebEngineUrlRequestJob::UrlNotFound);
-
-    } else if (method == POST && url == indexUrl && initiator == webUiOrigin) {
-        job->fail(QWebEngineUrlRequestJob::RequestAborted);
-    } else {
-        job->fail(QWebEngineUrlRequestJob::UrlNotFound);
     }
+
+    if(method == POST) {
+
+    }
+}
+
+void SchemeHandler::serveFiles(QWebEngineUrlRequestJob *job, QUrl url)
+{
+    QMimeType m = db.mimeTypeForUrl(url);
+    QFile *file = new QFile(QStringLiteral(":/app/") + url.path());
+
+    if(file->open(QIODevice::ReadOnly))
+        job->reply(m.name().toUtf8(), file);
+    else
+        job->fail(QWebEngineUrlRequestJob::UrlNotFound);
+
+}
+
+void SchemeHandler::sendData(QWebEngineUrlRequestJob *job, QUrl url)
+{
+    QRegularExpression re("^action=([\\w-]+)");
+    QRegularExpressionMatch match = re.match(url.query());
+    if (match.hasMatch()) {
+        QString action = match.captured(1);
+        if(action == "school-schedule" || action == "school-subjects") {
+            QFile *data = new QFile(QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation) + "/" + action + ".json");
+            data->open(QIODevice::ReadOnly);
+            job->reply(QByteArrayLiteral("application/json"), data);
+            return;
+        }
+    }
+
+    job->fail(QWebEngineUrlRequestJob::RequestAborted);
+}
+
+void SchemeHandler::handleInput(QWebEngineUrlRequestJob *job, QUrl url)
+{
+
 }
 
 
