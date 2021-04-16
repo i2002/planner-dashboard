@@ -1,0 +1,11 @@
+{
+	"demo": {
+		"name":"Demo",
+		"links": [
+			{"name": "Zoom", "url": "zoommtg://zoom.us/join?confno=&pwd="},
+            {"name": "Meet", "url": "https://meet.google.com/lookup/"},
+            {"name": "Classroom", "url": "https://classroom.google.com/u//c/"},
+            {"name": "Drive", "url": "https://drive.google.com/drive/folders/"}
+		]
+	}
+}

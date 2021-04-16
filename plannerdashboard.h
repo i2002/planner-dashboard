@@ -19,6 +19,7 @@ private:
 
     void registerShortcut();
     void setupDevTools();
+    void setupConfig();
 };
 
 #endif // PLANNERDASHBOARD_H

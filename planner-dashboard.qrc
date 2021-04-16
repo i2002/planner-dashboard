@@ -1708,5 +1708,7 @@
         <file>app/js/school.js</file>
         <file>app/js/timer.js</file>
         <file>app/js/app.js</file>
+        <file>config/school-schedule.json</file>
+        <file>config/school-subjects.json</file>
     </qresource>
 </RCC>
