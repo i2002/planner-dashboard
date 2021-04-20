@@ -8,7 +8,8 @@
 class PlannerDashboard
 {
 public:
-    PlannerDashboard(bool devTools = false);
+    PlannerDashboard();
+    void setupDevTools();
     static void initializeApp();
 
 private:
@@ -18,7 +19,6 @@ private:
     QWebEngineProfile profile;
 
     void registerShortcut();
-    void setupDevTools();
     void setupConfig();
 };
 

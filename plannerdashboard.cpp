@@ -6,13 +6,11 @@
 #include <QStandardPaths>
 #include <QHotkey>
 
-PlannerDashboard::PlannerDashboard(bool devTools)
+PlannerDashboard::PlannerDashboard()
 {
     handler.install();
     registerShortcut();
     setupConfig();
-    if(devTools)
-        setupDevTools();
 }
 
 void PlannerDashboard::registerShortcut()
