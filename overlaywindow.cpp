@@ -26,9 +26,10 @@ bool OverlayWindow::event(QEvent* e)
 
 void OverlayWindow::toggleState()
 {
-    if(!isVisible())
+    if(!isVisible()) {
         showMaximized();
-    else
+        activateWindow();
+    } else
         hide();
 }
 
