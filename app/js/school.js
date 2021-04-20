@@ -3,7 +3,7 @@ class School
     constructor(app, column = 1)
     {
         this.parent = append_card(column, "School", "fa-chalkboard", "school");
-        this.old_status = null;
+        this.old_status = -1;
         this.get_data().then(() => {
             this.render_view();
             this.setup_event_listeners();
