@@ -3,14 +3,20 @@
 
 #include <QApplication>
 #include <QWebEngineProfile>
-#include "overlaywindow.h"
 
-class PlannerDashboard
+#include "overlaywindow.h"
+#include "droidcamcontroller.h"
+
+class PlannerDashboard : public QObject
 {
+Q_OBJECT
+
 public:
     PlannerDashboard();
     void setupDevTools();
     static void initializeApp();
+
+    DroidcamController dc;
 
 private:
     OverlayWindow view;

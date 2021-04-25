@@ -1,5 +1,7 @@
 #include "schemehandler.h"
 
+#include "plannerdashboard.h"
+
 #include <QFile>
 #include <QDir>
 
@@ -57,7 +59,7 @@ void SchemeHandler::requestStarted(QWebEngineUrlRequestJob *job)
     }
 
     if(method == POST) {
-
+        handleInput(job, url);
     }
 }
 
@@ -83,7 +85,26 @@ void SchemeHandler::sendData(QWebEngineUrlRequestJob *job, QUrl url)
             QFile *data = new QFile(QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation) + "/" + action + ".json");
             data->open(QIODevice::ReadOnly);
             job->reply(QByteArrayLiteral("application/json"), data);
+            connect(job, &QWebEngineUrlRequestJob::destroyed, data, &QObject::deleteLater);
             return;
+        }
+
+        else if(action == "droidcam-status") {
+            QString status = "";
+            switch (((PlannerDashboard *)parent())->dc.getStatus())
+            {
+            case DroidcamControllerStatus::IDLE:
+                status = "idle";
+                break;
+            case DroidcamControllerStatus::CONNECTING:
+                status = "connecting";
+                break;
+            case DroidcamControllerStatus::CONNECTED:
+                status = "connected";
+                break;
+            }
+
+            job->reply(QByteArrayLiteral("application/json"), replyString(job, status));
         }
     }
 
@@ -92,7 +113,51 @@ void SchemeHandler::sendData(QWebEngineUrlRequestJob *job, QUrl url)
 
 void SchemeHandler::handleInput(QWebEngineUrlRequestJob *job, QUrl url)
 {
+    QRegularExpression re("^action=([\\w-]+)");
+    QRegularExpressionMatch match = re.match(url.query());
+    if (match.hasMatch()) {
+        QString action = match.captured(1);
+        if(action == "droidcam-start") {
+            ((PlannerDashboard *)parent())->dc.start();
+            QBuffer *buffer = new QBuffer;
+            connect(job, SIGNAL(destroyed()), buffer, SLOT(deleteLater()));
 
+            buffer->open(QIODevice::WriteOnly);
+            buffer->write("<html><body>Hello world!</body></html>");
+            buffer->close();
+
+            job->reply("application/json", buffer);
+            return;
+        }
+        else if(action == "droidcam-stop") {
+            ((PlannerDashboard *)parent())->dc.stop();
+            QBuffer *buffer = new QBuffer;
+            connect(job, SIGNAL(destroyed()), buffer, SLOT(deleteLater()));
+
+            buffer->open(QIODevice::WriteOnly);
+            buffer->write("<html><body>Hello world!</body></html>");
+            buffer->close();
+
+            job->reply("application/json", buffer);
+            return;
+        }
+    }
+
+    job->fail(QWebEngineUrlRequestJob::RequestAborted);
+}
+
+QBuffer* SchemeHandler::replyString(QWebEngineUrlRequestJob* job, QString s)
+{
+    // create buffer for QString
+    QBuffer *buffer = new QBuffer;
+    buffer->open(QIODevice::WriteOnly);
+    buffer->write(s.toUtf8());
+
+    // delete buffer after job destroy
+    connect(job, &QWebEngineUrlRequestJob::destroyed, buffer, &QObject::deleteLater);
+    buffer->close();
+
+    return buffer;
 }
 
 

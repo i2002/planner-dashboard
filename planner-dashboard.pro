@@ -10,6 +10,7 @@ CONFIG += c++11
 
 SOURCES += \
     apppage.cpp \
+    droidcamcontroller.cpp \
     main.cpp \
     overlaywindow.cpp \
     plannerdashboard.cpp \
@@ -17,6 +18,7 @@ SOURCES += \
 
 HEADERS += \
     apppage.h \
+    droidcamcontroller.h \
     overlaywindow.h \
     plannerdashboard.h \
     schemehandler.h

@@ -1,0 +1,8 @@
+{
+    "ip": "192.168.1.1",
+    "dcExec": "droidcam-cli",
+    "dcPort": "0000",
+    "adbExec": "adb",
+    "adbPort": "0000",
+    "deviceId": ""
+}
