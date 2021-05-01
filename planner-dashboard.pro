@@ -10,6 +10,7 @@ CONFIG += c++11
 
 SOURCES += \
     apppage.cpp \
+    commands/droidcamworkerthread.cpp \
     droidcamcontroller.cpp \
     main.cpp \
     multimonitorcontroller.cpp \
@@ -19,6 +20,7 @@ SOURCES += \
 
 HEADERS += \
     apppage.h \
+    commands/droidcamworkerthread.h \
     droidcamcontroller.h \
     multimonitorcontroller.h \
     overlaywindow.h \
