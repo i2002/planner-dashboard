@@ -12,6 +12,7 @@ SOURCES += \
     apppage.cpp \
     droidcamcontroller.cpp \
     main.cpp \
+    multimonitorcontroller.cpp \
     overlaywindow.cpp \
     plannerdashboard.cpp \
     schemehandler.cpp
@@ -19,6 +20,7 @@ SOURCES += \
 HEADERS += \
     apppage.h \
     droidcamcontroller.h \
+    multimonitorcontroller.h \
     overlaywindow.h \
     plannerdashboard.h \
     schemehandler.h

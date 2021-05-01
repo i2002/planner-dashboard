@@ -19,11 +19,12 @@ class Connections
         <ul>
             <li class="droidcam" data-status="idle">
                 <span>Droidcam</span>
-                <i class="fas fa-video"></i>
+                <i class="fas fa-fw fa-video"></i>
             </li>
-            <li class="multimonitor">
+            <li class="multimonitor" data-status="unset">
                 <span>Multimonitor</span>
-                <i class="fas fa-desktop"></i>
+                <i class="fas fa-fw fa-desktop"></i>
+                <i class="fas fa-fw fa-redo"></i>
             </li>
         </ul>`
     }
@@ -38,12 +39,17 @@ class Connections
                 dc.querySelector("i").classList.remove("fa-stop");
                 dc.querySelector("i").classList.add("fa-video");
             } else if(data == "connecting") {
-                dc.classList.add("connecting");
+                // dc.classList.add("connecting");
             } else if(data == "connected") {
                 dc.querySelector("i").classList.remove("fa-video");
                 dc.querySelector("i").classList.add("fa-stop");
-                dc.classList.remove("connecting");
+                // dc.classList.remove("connecting");
             }
+        });
+
+        httpGetAsync("app:data?action=multimonitor-status", (data) => {
+            let dc = this.parent.querySelector(".multimonitor");
+            dc.dataset.status = data;
         });
     }
 
@@ -54,6 +60,28 @@ class Connections
                 httpPostAsync("app:data?action=droidcam-start", "", (data) => this.update_view(), (err) => console.error(err));
             } else if(e.target.parentElement.dataset.status == "connected") {
                 httpPostAsync("app:data?action=droidcam-stop", "", (data) => this.update_view(), (err) => console.error(err));
+            }
+        });
+
+        this.parent.querySelector(".multimonitor i.fa-desktop").addEventListener("click", (e) => {
+            let status = e.target.parentElement.dataset.status;
+            if(status == "unset") {
+                let position = "left";
+                httpPostAsync(`app:data?action=multimonitor-setup&position=${position}`, "", (data) => this.update_view(), (err) => console.error(err));
+            }
+            else {
+                httpPostAsync("app:data?action=multimonitor-disable", "", (data) => this.update_view(), (err) => console.error(err));
+            }
+        });
+
+        this.parent.querySelector(".multimonitor i.fa-redo").addEventListener("click", (e) => {
+            let status = e.target.parentElement.dataset.status;
+            if(status == "unset") {
+                let position = "right";
+                httpPostAsync(`app:data?action=multimonitor-setup&position=${position}`, "", (data) => this.update_view(), (err) => console.error(err));
+            }
+            else {
+                httpPostAsync("app:data?action=multimonitor-reset", "", (data) => this.update_view(), (err) => console.error(err));
             }
         });
     }

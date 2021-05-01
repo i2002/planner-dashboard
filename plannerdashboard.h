@@ -6,6 +6,7 @@
 
 #include "overlaywindow.h"
 #include "droidcamcontroller.h"
+#include "multimonitorcontroller.h"
 
 class PlannerDashboard : public QObject
 {
@@ -17,6 +18,7 @@ public:
     static void initializeApp();
 
     DroidcamController dc;
+    MultimonitorController multimonitor;
 
 private:
     OverlayWindow view;

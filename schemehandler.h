@@ -16,6 +16,7 @@ public:
     static void registerUrlScheme();
     const static QByteArray schemeName;
     const static QUrl indexUrl;
+    const static QUrl dataUrl;
 
 private:
     QMimeDatabase db;

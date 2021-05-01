@@ -1712,5 +1712,6 @@
         <file>config/school-subjects.json</file>
         <file>config/droidcam.json</file>
         <file>app/js/connections.js</file>
+        <file>config/multimonitor.json</file>
     </qresource>
 </RCC>
