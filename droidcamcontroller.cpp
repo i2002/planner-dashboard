@@ -1,5 +1,6 @@
 #include "droidcamcontroller.h"
 
+#include <QMessageBox>
 #include <QThread>
 #include <QtConcurrent/QtConcurrent>
 
@@ -62,14 +63,35 @@ void DroidcamController::setupConfig()
 
 void DroidcamController::adbSetupFinished()
 {
-    AdbSetupStatus s = adbSetupWatcher.result();
-    if(s == AdbSetupStatus::SUCCESFUL) {
+    QPair<AdbSetupStatus, QString> res = adbSetupWatcher.result();
+    switch (res.first)
+    {
+    case AdbSetupStatus::SUCCESFUL:
         droidcam.start("droidcam-cli", {"-v", ip, dcPort});
-        status = DroidcamControllerStatus::CONNECTED;
-        return;
+        break;
+
+    case AdbSetupStatus::DEVICE_OFFLINE:
+        QMessageBox::information(nullptr, "Droidcam setup failure", "Device offline, connect to WiFi\n" + res.second);
+        break;
+
+    case AdbSetupStatus::DEVICE_UNSET:
+        QMessageBox::information(nullptr, "Droidcam setup failure", "Device unset, connect through USB to setup\n" + res.second);
+        break;
+
+    case AdbSetupStatus::DEVICE_CONNECTION_FAILURE:
+        QMessageBox::information(nullptr, "Droidcam setup failure", "Device connection failure\n" + res.second);
+        break;
+
+    case AdbSetupStatus::UNLOCK_TIMEOUT:
+        QMessageBox::information(nullptr, "Droidcam setup failure", "Phone unlock timeout\n");
+        break;
+
+    case AdbSetupStatus::APP_START_FAILURE:
+        QMessageBox::information(nullptr, "Droidcam setup failure", "Failed to start phone app\n");
+        break;
     }
 
-    status = DroidcamControllerStatus::IDLE;
+    status = res.first == AdbSetupStatus::SUCCESFUL ? DroidcamControllerStatus::CONNECTED : DroidcamControllerStatus::IDLE;
 }
 
 void DroidcamController::adbCloseFinished()
@@ -102,24 +124,35 @@ void DroidcamController::dcProcessFinished(int , QProcess::ExitStatus )
     status = DroidcamControllerStatus::IDLE;
 }
 
-AdbSetupStatus DroidcamController::runAdbSetup()
+QPair<AdbSetupStatus, QString> DroidcamController::runAdbSetup()
 {
-    if(!getDevices().contains(adbSocket))
-        if(!connectDevice())
+    QString connection = connectDevice();
+    if(connection.contains("failed to connect to") || connection == "") {
+        if(connection.contains("No route to host") || connection == "") {
+            return {AdbSetupStatus::DEVICE_OFFLINE, connection};
+        }
+        else if(connection.contains("Connection refused")) {
             if(!setupConnection()) {
-                return AdbSetupStatus::DEVICE_CONNECTION_FAILURE;
+                return {AdbSetupStatus::DEVICE_UNSET, connection};
             }
+        }
+        else {
+            return {AdbSetupStatus::DEVICE_CONNECTION_FAILURE, connection};
+        }
+
+        QThread::sleep(5);
+    }
 
     if(!startApp()) {
-        return AdbSetupStatus::APP_START_FAILURE;
+        return {AdbSetupStatus::APP_START_FAILURE, ""};
     }
 
     if(!waitForUnlock()) {
-        return AdbSetupStatus::UNLOCK_TIMEOUT;
+        return {AdbSetupStatus::UNLOCK_TIMEOUT, ""};
     }
 
     QThread::sleep(1);
-    return AdbSetupStatus::SUCCESFUL;
+    return {AdbSetupStatus::SUCCESFUL, ""};
 }
 
 AdbSetupStatus DroidcamController::runAdbClose()
@@ -137,13 +170,13 @@ QString DroidcamController::getDevices()
     return listDevices.readAll();
 }
 
-bool DroidcamController::connectDevice()
+QString DroidcamController::connectDevice()
 {
     QProcess connectDevice;
     connectDevice.start(adbExec, {"connect", adbSocket});
     connectDevice.waitForFinished();
     QString connection = connectDevice.readAllStandardOutput();
-    return !connection.contains("failed to connect to");
+    return connection;
 }
 
 bool DroidcamController::setupConnection()
@@ -156,7 +189,9 @@ bool DroidcamController::setupConnection()
     QProcess setup;
     setup.start(adbExec, {"-s", deviceId, "tcpip", adbPort});
     setup.waitForFinished();
-    return connectDevice();
+    QThread::sleep(3);
+    QString connection = connectDevice();
+    return !connection.contains("failed to connect to");
 }
 
 bool DroidcamController::startApp()

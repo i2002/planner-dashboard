@@ -8,10 +8,11 @@
 enum class AdbSetupStatus
 {
     SUCCESFUL,
+    DEVICE_OFFLINE,
+    DEVICE_UNSET,
     DEVICE_CONNECTION_FAILURE,
     APP_START_FAILURE,
     UNLOCK_TIMEOUT,
-    //...
 };
 
 enum class DroidcamControllerStatus {
@@ -34,7 +35,7 @@ public:
 private:
     DroidcamControllerStatus status = DroidcamControllerStatus::IDLE;
     QProcess droidcam;
-    QFutureWatcher<AdbSetupStatus> adbSetupWatcher;
+    QFutureWatcher<QPair<AdbSetupStatus, QString>> adbSetupWatcher;
     QFutureWatcher<AdbSetupStatus> adbCloseWatcher;
 
     // config data
@@ -57,10 +58,10 @@ private:
     void dcProcessFinished(int exitCode, QProcess::ExitStatus exitStatus);
 
     // adb comm
-    AdbSetupStatus runAdbSetup();
+    QPair<AdbSetupStatus, QString> runAdbSetup();
     AdbSetupStatus runAdbClose();
     QString getDevices();
-    bool connectDevice();
+    QString connectDevice();
     bool setupConnection();
     bool startApp();
     bool waitForUnlock();
