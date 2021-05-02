@@ -154,10 +154,11 @@ void SchemeHandler::handleInput(QWebEngineUrlRequestJob *job, QUrl url)
         else if(action == "multimonitor-setup") {
             // get monitor position
             MultiMonitorPosition monitorPos = MultiMonitorPosition::LEFT;
-            QRegularExpression rePos("^position=([\\w-]+)");
+            QRegularExpression rePos("position=([\\w-]+)");
             QRegularExpressionMatch matchPos = rePos.match(url.query());
             if(matchPos.hasMatch()) {
-                monitorPos = matchPos.captured(1) == "left" ? MultiMonitorPosition::LEFT : MultiMonitorPosition::RIGHT;
+                QString position = matchPos.captured(1);
+                monitorPos = position == "left" ? MultiMonitorPosition::LEFT : MultiMonitorPosition::RIGHT;
             }
 
             ((PlannerDashboard *)parent())->multimonitor.setupMonitor(monitorPos);
