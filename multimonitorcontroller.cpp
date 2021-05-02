@@ -93,8 +93,13 @@ void MultimonitorController::restartServer()
         return;
     }
 
-    status = MultimonitorControllerStatus::RESTARTING;
-    stopServer();
+    if(status == MultimonitorControllerStatus::IDLE) {
+        status = MultimonitorControllerStatus::CONNECTING;
+        runServerRestart();
+    } else {
+        status = MultimonitorControllerStatus::RESTARTING;
+        stopServer();
+    }
 }
 
 void MultimonitorController::disableMonitor()
