@@ -62,7 +62,7 @@ void MultimonitorController::startServer()
 {
     if(server.state() == QProcess::ProcessState::NotRunning) {
         QString clip = QString("%1x%2+%3+%4").arg(virtualWidth).arg(virtualHeight).arg(clipX).arg(clipY);
-        server.start("x11vnc", {"-clip", clip, "-multiptr", "-noxdamage", "-passwd", serverPassword});
+        server.start("x11vnc", {"-clip", clip, "-multiptr", "-noxdamage", "-noxcomposite", "-cursor", "arrow", "-repeat", "-passwd", serverPassword});
     }
 }
 
@@ -108,8 +108,13 @@ void MultimonitorController::disableMonitor()
         return;
     }
 
-    status = MultimonitorControllerStatus::DISABLING;
-    stopServer();
+    if(status == MultimonitorControllerStatus::IDLE) {
+        status = MultimonitorControllerStatus::DISABLING;
+        monitorDisableWatcher.setFuture(QtConcurrent::run(this, &MultimonitorController::runMonitorDisable));
+    } else {
+        status = MultimonitorControllerStatus::DISABLING;
+        stopServer();
+    }
 }
 
 MultimonitorControllerStatus MultimonitorController::getStatus()
@@ -123,7 +128,8 @@ void MultimonitorController::monitorSetupFinished()
 {
     bool success = monitorSetupWatcher.result();
     if(success) {
-        startServer();
+        //startServer();
+        status = MultimonitorControllerStatus::IDLE;
     } else {
         status = MultimonitorControllerStatus::UNSET;
     }
