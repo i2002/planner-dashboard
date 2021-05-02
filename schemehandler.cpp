@@ -68,9 +68,10 @@ void SchemeHandler::serveFiles(QWebEngineUrlRequestJob *job, QUrl url)
     QMimeType m = db.mimeTypeForUrl(url);
     QFile *file = new QFile(QStringLiteral(":/app/") + url.path());
 
-    if(file->open(QIODevice::ReadOnly))
+    if(file->open(QIODevice::ReadOnly)) {
         job->reply(m.name().toUtf8(), file);
-    else
+        connect(job, &QWebEngineUrlRequestJob::destroyed, file, &QObject::deleteLater);
+    } else
         job->fail(QWebEngineUrlRequestJob::UrlNotFound);
 
 }
