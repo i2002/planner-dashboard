@@ -10,11 +10,11 @@ OverlayWindow::OverlayWindow(QWidget* parent) :
     setupEvents();
 }
 
-//OverlayWindow::~OverlayWindow()
-//{
-//    //delete page();
-//    QWebEngineView::~QWebEngineView();
-//}
+OverlayWindow::~OverlayWindow()
+{
+    //delete page();
+    QWebEngineView::~QWebEngineView();
+}
 
 bool OverlayWindow::event(QEvent* e)
 {

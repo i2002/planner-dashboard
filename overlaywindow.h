@@ -11,7 +11,7 @@ class OverlayWindow : public QWebEngineView
     Q_OBJECT
 public:
     OverlayWindow(QWidget* parent = nullptr);
-    //~OverlayWindow();
+    ~OverlayWindow();
     bool event(QEvent* e);
     void toggleState();
     void setupPage();
