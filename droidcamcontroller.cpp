@@ -67,7 +67,13 @@ void DroidcamController::adbSetupFinished()
     switch (res.first)
     {
     case AdbSetupStatus::SUCCESFUL:
-        droidcam.start("droidcam-cli", {"-v", ip, dcPort});
+#ifdef Q_OS_LINUX
+        droidcam.start(dcExec, {"-v", ip, dcPort});
+#endif
+
+#ifdef Q_OS_WIN
+        droidcam.start(dcExec, {"-c", ip, dcPort, "-video", "-tray"});
+#endif
         break;
 
     case AdbSetupStatus::DEVICE_OFFLINE:
@@ -76,6 +82,10 @@ void DroidcamController::adbSetupFinished()
 
     case AdbSetupStatus::DEVICE_UNSET:
         QMessageBox::information(nullptr, "Droidcam setup failure", "Device unset, connect through USB to setup\n" + res.second);
+        break;
+
+    case AdbSetupStatus::DEVICE_UNAUTHORIZED:
+        QMessageBox::information(nullptr, "Droidcam setup failure", "Please authorize connection" + res.second);
         break;
 
     case AdbSetupStatus::DEVICE_CONNECTION_FAILURE:
@@ -135,6 +145,9 @@ QPair<AdbSetupStatus, QString> DroidcamController::runAdbSetup()
             if(!setupConnection()) {
                 return {AdbSetupStatus::DEVICE_UNSET, connection};
             }
+        }
+        else if(connection.contains("failed to authenticate")) {
+            return {AdbSetupStatus::DEVICE_UNAUTHORIZED, connection};
         }
         else {
             return {AdbSetupStatus::DEVICE_CONNECTION_FAILURE, connection};
