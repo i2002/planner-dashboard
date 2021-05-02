@@ -1,19 +1,13 @@
 #include "overlaywindow.h"
 #include "schemehandler.h"
-#include "apppage.h"
 
 OverlayWindow::OverlayWindow(QWidget* parent) :
     QWebEngineView(parent),
-    closeShortcut{Qt::Key_Escape, this}
+    closeShortcut{Qt::Key_Escape, this},
+    appPage{this}
 {
     setupPage();
     setupEvents();
-}
-
-OverlayWindow::~OverlayWindow()
-{
-    //delete page();
-    QWebEngineView::~QWebEngineView();
 }
 
 bool OverlayWindow::event(QEvent* e)
@@ -35,11 +29,10 @@ void OverlayWindow::toggleState()
 
 void OverlayWindow::setupPage()
 {
-    AppPage* page = new AppPage();
-    page->load(SchemeHandler::indexUrl);
-    page->setBackgroundColor(Qt::transparent);
+    appPage.load(SchemeHandler::indexUrl);
+    appPage.setBackgroundColor(Qt::transparent);
 
-    setPage(page);
+    setPage(&appPage);
     setContextMenuPolicy(Qt::NoContextMenu);
     setAttribute(Qt::WA_TranslucentBackground);
     setWindowFlags(Qt::FramelessWindowHint);
