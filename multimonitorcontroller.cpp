@@ -30,6 +30,7 @@ void MultimonitorController::setupConfig()
     QJsonDocument configDoc = QJsonDocument::fromJson(val.toUtf8());
     QJsonObject configObj = configDoc.object();
 
+#ifdef Q_OS_LINUX
     mainWidth = configObj["mainWidth"].toInt();
     mainHeight = configObj["mainHeight"].toInt();
     mainName = configObj["mainName"].toString();
@@ -37,6 +38,12 @@ void MultimonitorController::setupConfig()
     virtualHeight = configObj["virtualHeight"].toInt();
     virtualName = configObj["virtualName"].toString();
     serverPassword = configObj["serverPassword"].toString();
+#endif
+
+#ifdef Q_OS_WIN
+    enableScript = configObj["enableScript"].toString();
+    disableScript = configObj["disableScript"].toString();
+#endif
 }
 
 void MultimonitorController::setPosition(MultiMonitorPosition p)
@@ -89,6 +96,7 @@ void MultimonitorController::setupMonitor(MultiMonitorPosition pos)
 
 void MultimonitorController::restartServer()
 {
+#ifdef Q_OS_LINUX
     if(status != MultimonitorControllerStatus::UNSET && status != MultimonitorControllerStatus::IDLE && status != MultimonitorControllerStatus::CONNECTED) {
         return;
     }
@@ -100,6 +108,7 @@ void MultimonitorController::restartServer()
         status = MultimonitorControllerStatus::RESTARTING;
         stopServer();
     }
+#endif
 }
 
 void MultimonitorController::disableMonitor()
@@ -176,6 +185,7 @@ void MultimonitorController::serverProcessFinished(int, QProcess::ExitStatus)
 // ################ Actions #########################
 bool MultimonitorController::runMonitorSetup()
 {
+#ifdef Q_OS_LINUX
     // get position
     QString absPos = QString("%1x%2").arg(clipX).arg(clipY);
 
@@ -194,13 +204,37 @@ bool MultimonitorController::runMonitorSetup()
     QString regEx = QString("%1 %2\\/.*x%3\\/.*\\+%4\\+%5  %1").arg(virtualName).arg(virtualWidth).arg(virtualHeight).arg(clipX).arg(clipY);
     QRegularExpression re(regEx);
     return re.match(monitors).hasMatch();
+#endif
+
+#ifdef Q_OS_WIN
+    // enable idd
+    QProcess enableIdd;
+    enableIdd.start("cmd.exe",  {"/C", enableScript});
+    enableIdd.waitForReadyRead();
+    enableIdd.kill();
+    enableIdd.waitForFinished();
+
+    // open display settings
+    QProcess::execute("cmd.exe", {"/C", "start", "ms-settings:display"});
+    return true;
+#endif
 }
 
 bool MultimonitorController::runMonitorDisable()
 {
+#ifdef Q_OS_LINUX
     // disable monitor
     QThread::sleep(2);
     QProcess::execute("xrandr", {"--output", virtualName, "--off"});
+#endif
+#ifdef Q_OS_WIN
+    // disable idd
+    QProcess disableIdd;
+    disableIdd.start("cmd.exe",  {"/C", disableScript});
+    disableIdd.waitForReadyRead();
+    disableIdd.kill();
+    disableIdd.waitForFinished();
+#endif
     return true;
 }
 

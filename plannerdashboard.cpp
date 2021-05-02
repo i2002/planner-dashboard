@@ -6,7 +6,7 @@
 #include <QStandardPaths>
 #include <QHotkey>
 
-#include "commands/droidcamworkerthread.h"
+//#include "commands/droidcamworkerthread.h"
 #include <QMessageBox>
 
 PlannerDashboard::PlannerDashboard() :
@@ -20,7 +20,7 @@ PlannerDashboard::PlannerDashboard() :
 void PlannerDashboard::registerShortcut()
 {
 #ifdef QT_DEBUG
-    QKeySequence k(Qt::CTRL + Qt::Key_ScrollLock);
+    QKeySequence k(Qt::SHIFT + Qt::Key_ScrollLock);
 #endif
 
 #ifndef QT_DEBUG

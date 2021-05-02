@@ -44,6 +44,11 @@ private:
     QString virtualName;
     QString serverPassword;
 
+#ifdef Q_OS_WIN
+    QString enableScript;
+    QString disableScript;
+#endif
+
     // position data
     MultiMonitorPosition pos;
     int clipX;

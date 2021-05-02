@@ -5,5 +5,7 @@
     "virtualWidth": 1920,
     "virtualHeight": 1080,
     "virtualName": "VIRTUAL1",
-    "serverPassword": "demo"
+    "serverPassword": "demo",
+    "enableScript": "usbmmidd\\usbmmidd_on.bat",
+    "disableScript": "usbmmidd\\usbmmidd_off.bat"
 }
