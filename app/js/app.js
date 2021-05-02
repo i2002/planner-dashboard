@@ -16,6 +16,24 @@ function httpGetAsync(url, callback, error)
     xmlHttp.send();
 }
 
+function httpPostAsync(url, body, callback, error)
+{
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.onreadystatechange = function() { 
+        if (xmlHttp.readyState == 4) {
+            if(xmlHttp.status == 200)
+                callback(xmlHttp.responseText);
+            else
+                error(xmlHttp);
+        }   
+    }
+
+    xmlHttp.onerror = error;
+    xmlHttp.onabort = error;
+    xmlHttp.open("POST", url, true);
+    xmlHttp.send(body);
+}
+
 class App
 {
     constructor()
