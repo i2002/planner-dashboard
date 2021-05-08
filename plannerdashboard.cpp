@@ -5,11 +5,14 @@
 #include <QDir>
 #include <QStandardPaths>
 #include <QHotkey>
+#include <QMessageBox>
+#include <QThread>
 
 //#include "commands/droidcamworkerthread.h"
 #include <QMessageBox>
 
 PlannerDashboard::PlannerDashboard() :
+    dc{this},
     handler{this}
 {
     handler.install();
@@ -42,6 +45,15 @@ void PlannerDashboard::setupDevTools()
 {
     view.page()->setDevToolsPage(devTools.page());
     devTools.show();
+}
+
+void PlannerDashboard::showMessageBox(QString title, QString message)
+{
+    // a window must be shown, otherwise the dialog is the last window closed and it closes application
+    view.setKeep(true);
+    view.showMaximized();
+    QMessageBox::information(&view, title, message);
+    view.setKeep(false);
 }
 
 void PlannerDashboard::setupConfig()

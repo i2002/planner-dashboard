@@ -1,10 +1,12 @@
 #include "droidcamcontroller.h"
 
+#include "plannerdashboard.h"
+
 #include <QMessageBox>
 #include <QThread>
 #include <QtConcurrent/QtConcurrent>
 
-DroidcamController::DroidcamController()
+DroidcamController::DroidcamController(QObject* parent) : QObject{parent}
 {
     setupConfig();
     droidcam.setProcessChannelMode(QProcess::MergedChannels);
@@ -64,6 +66,9 @@ void DroidcamController::setupConfig()
 void DroidcamController::adbSetupFinished()
 {
     QPair<AdbSetupStatus, QString> res = adbSetupWatcher.result();
+    PlannerDashboard* app = (PlannerDashboard*) parent();
+    QString messageTitle = "Droidcam setup failure";
+
     switch (res.first)
     {
     case AdbSetupStatus::SUCCESFUL:
@@ -77,27 +82,27 @@ void DroidcamController::adbSetupFinished()
         break;
 
     case AdbSetupStatus::DEVICE_OFFLINE:
-        QMessageBox::information(nullptr, "Droidcam setup failure", "Device offline, connect to WiFi\n" + res.second);
+        app->showMessageBox(messageTitle, "Device offline, connect to WiFi\n" + res.second);
         break;
 
     case AdbSetupStatus::DEVICE_UNSET:
-        QMessageBox::information(nullptr, "Droidcam setup failure", "Device unset, connect through USB to setup\n" + res.second);
+        app->showMessageBox(messageTitle, "Device unset, connect through USB to setup\n" + res.second);
         break;
 
     case AdbSetupStatus::DEVICE_UNAUTHORIZED:
-        QMessageBox::information(nullptr, "Droidcam setup failure", "Please authorize connection" + res.second);
+        app->showMessageBox(messageTitle, "Please authorize connection" + res.second);
         break;
 
     case AdbSetupStatus::DEVICE_CONNECTION_FAILURE:
-        QMessageBox::information(nullptr, "Droidcam setup failure", "Device connection failure\n" + res.second);
+        app->showMessageBox(messageTitle, "Device connection failure\n" + res.second);
         break;
 
     case AdbSetupStatus::UNLOCK_TIMEOUT:
-        QMessageBox::information(nullptr, "Droidcam setup failure", "Phone unlock timeout\n");
+        app->showMessageBox(messageTitle, "Phone unlock timeout\n");
         break;
 
     case AdbSetupStatus::APP_START_FAILURE:
-        QMessageBox::information(nullptr, "Droidcam setup failure", "Failed to start phone app\n");
+        app->showMessageBox(messageTitle, "Failed to start phone app\n");
         break;
     }
 

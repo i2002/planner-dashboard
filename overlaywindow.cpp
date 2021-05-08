@@ -12,7 +12,7 @@ OverlayWindow::OverlayWindow(QWidget* parent) :
 
 bool OverlayWindow::event(QEvent* e)
 {
-    if(e->type() == QEvent::WindowDeactivate && isVisible())
+    if(e->type() == QEvent::WindowDeactivate && isVisible() && !keep)
         hide();
 
     return QWebEngineView::event(e);
@@ -37,6 +37,11 @@ void OverlayWindow::setupPage()
     setAttribute(Qt::WA_TranslucentBackground);
     setWindowFlags(Qt::FramelessWindowHint);
     resize(1920, 900);
+}
+
+void OverlayWindow::setKeep(bool val)
+{
+    keep = val;
 }
 
 void OverlayWindow::setupEvents()

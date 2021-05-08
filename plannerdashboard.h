@@ -15,6 +15,7 @@ Q_OBJECT
 public:
     PlannerDashboard();
     void setupDevTools();
+    void showMessageBox(QString title, QString message);
     static void initializeApp();
 
     DroidcamController dc;

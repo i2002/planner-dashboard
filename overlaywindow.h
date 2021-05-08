@@ -15,12 +15,14 @@ public:
     bool event(QEvent* e);
     void toggleState();
     void setupPage();
+    void setKeep(bool val);
 
 private:
     void setupEvents();
 
     QShortcut closeShortcut;
     AppPage appPage;
+    bool keep = false;
 };
 
 #endif // OVERLAYWINDOW_H

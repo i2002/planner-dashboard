@@ -27,7 +27,7 @@ class DroidcamController : public QObject
     Q_OBJECT
 
 public:
-    DroidcamController();
+    DroidcamController(QObject* parent = nullptr);
 
     void start();
     void stop();
