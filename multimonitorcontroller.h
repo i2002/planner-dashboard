@@ -57,6 +57,7 @@ private:
 
     // helpers
     void setupConfig();
+    void setInitialStatus();
     void setPosition(MultiMonitorPosition p);
 
     // handlers

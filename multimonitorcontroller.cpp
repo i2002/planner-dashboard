@@ -6,6 +6,7 @@
 MultimonitorController::MultimonitorController(QObject *parent) : QObject(parent)
 {
     setupConfig();
+    setInitialStatus();
 
     // setup signal handlers
     connect(&monitorSetupWatcher, &QFutureWatcher<void>::finished, this, &MultimonitorController::monitorSetupFinished);
@@ -43,6 +44,22 @@ void MultimonitorController::setupConfig()
 #ifdef Q_OS_WIN
     enableScript = configObj["enableScript"].toString();
     disableScript = configObj["disableScript"].toString();
+#endif
+}
+
+void MultimonitorController::setInitialStatus()
+{
+#ifdef Q_OS_WIN
+    QProcess getMonitorCount;
+    getMonitorCount.start("cmd.exe", {"/C", "powershell", "-NoLogo", "-Command", "(Get-CimInstance -Namespace root\\wmi -ClassName WmiMonitorBasicDisplayParams | measure).Count"});
+    getMonitorCount.waitForFinished();
+    QString res = getMonitorCount.readAllStandardOutput();
+
+    // check if multimonitor already active
+    if(!res.startsWith("1"))
+    {
+        status = MultimonitorControllerStatus::IDLE;
+    }
 #endif
 }
 
@@ -214,6 +231,9 @@ bool MultimonitorController::runMonitorSetup()
     enableIdd.kill();
     enableIdd.waitForFinished();
 
+    // set vnc display
+    QProcess::execute("cmd.exe", {"/C", "powershell", "Start-Process reg -ArgumentList 'add HKEY_LOCAL_MACHINE\\SOFTWARE\\RealVNC\\vncserver /t REG_SZ /v DisplayDevice /d 2 /f' -Verb Runas"});
+
     // open display settings
     QProcess::execute("cmd.exe", {"/C", "start", "ms-settings:display"});
     return true;
@@ -234,6 +254,9 @@ bool MultimonitorController::runMonitorDisable()
     disableIdd.waitForReadyRead();
     disableIdd.kill();
     disableIdd.waitForFinished();
+
+    // reset vnc display
+    QProcess::execute("cmd.exe", {"/C", "powershell", "Start-Process reg -ArgumentList 'add HKEY_LOCAL_MACHINE\\SOFTWARE\\RealVNC\\vncserver /t REG_SZ /v DisplayDevice /d \"\" /f' -Verb Runas"});
 #endif
     return true;
 }
