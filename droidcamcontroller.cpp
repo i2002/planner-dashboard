@@ -142,11 +142,11 @@ void DroidcamController::dcProcessFinished(int , QProcess::ExitStatus )
 QPair<AdbSetupStatus, QString> DroidcamController::runAdbSetup()
 {
     QString connection = connectDevice();
-    if(connection.contains("failed to connect to") || connection == "") {
-        if(connection.contains("No route to host") || connection == "") {
+    if(connection.contains("failed to connect to") || connection.contains("cannot connect to") || connection == "") {
+        if(connection.contains("No route to host")) {
             return {AdbSetupStatus::DEVICE_OFFLINE, connection};
         }
-        else if(connection.contains("Connection refused")) {
+        else if(connection.contains("Connection refused") || connection.contains("No connection could be made because the target machine actively refused it.") || connection.contains("")) {
             if(!setupConnection()) {
                 return {AdbSetupStatus::DEVICE_UNSET, connection};
             }
